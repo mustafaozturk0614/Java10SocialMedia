@@ -15,9 +15,14 @@ public enum ErrorType {
     INVALID_CODE(4112, "Geçersiz Kod",HttpStatus.BAD_REQUEST),
     ALREADY_ACTIVE(4113, "Hesabınız zaten aktif",HttpStatus.BAD_REQUEST),
     UNEXPECTED_ERROR(4114,"Beklenmeyen bir hata olustu",HttpStatus.BAD_REQUEST),
+    USERNAME_ALREADY_EXIST(4115,"Böyle bir kullanıcı adı bulunmaktadır !!!",HttpStatus.BAD_REQUEST),
+    DATA_INTEGRITY(4116, "hatalı veri",HttpStatus.BAD_REQUEST),
+    LOGIN_ERROR(4117, "Kullanıcı adı veya şifre hatalı!!!",HttpStatus.BAD_REQUEST),
+    INVALID_TOKEN(4118, "Geçersiz Token !!!",HttpStatus.BAD_REQUEST),
 
 
     ;
+
 
     private int code;
     private String message;

@@ -5,6 +5,7 @@ ext {
             lombok    : "1.18.28",
             mapstruct : "1.5.5.Final",
             openapi   : "1.7.0",
+            jwt: "4.4.0",
     ]
 
     //ctrl + alt + l --> formatlar
@@ -12,11 +13,11 @@ ext {
             springBootWeb   : "org.springframework.boot:spring-boot-starter-web:$versions.springBoot",
             springBootJpa     : "org.springframework.boot:spring-boot-starter-data-jpa:$versions.springBoot",
             springBootValidation: "org.springframework.boot:spring-boot-starter-validation:$versions.springBoot",
-
             postgresql        : "org.postgresql:postgresql:$versions.postgresql",
             lombok            : "org.projectlombok:lombok:$versions.lombok",
             mapstruct         : "org.mapstruct:mapstruct:$versions.mapstruct",
             mapstructProcessor: "org.mapstruct:mapstruct-processor:$versions.mapstruct",
-            openapi           : "org.springdoc:springdoc-openapi-ui:$versions.openapi"
+            openapi           : "org.springdoc:springdoc-openapi-ui:$versions.openapi",
+            javaJwt: "com.auth0:java-jwt:$versions.jwt",
     ]
 }
