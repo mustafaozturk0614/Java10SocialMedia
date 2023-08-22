@@ -47,10 +47,17 @@ public class AuthService extends ServiceManager<Auth, Long> {
     }
 
     public RegisterResponseDto register(RegisterRequestDto dto){
+
         Auth auth = IAuthMapper.INSTANCE.toAuth(dto);
         auth.setActivationCode(CodeGenerator.generateCode());
-        save(auth);
+        try {
+            save(auth);
+        }catch (Exception e){
+            throw new RuntimeException("Kayıt başarısız!!!!");
+        }
+
         RegisterResponseDto responseDto = IAuthMapper.INSTANCE.toRegisterResponseDto(auth);
+
         return responseDto;
     }
     public Boolean login(LoginRequestDto dto){

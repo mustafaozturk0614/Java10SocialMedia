@@ -11,4 +11,9 @@ public class AuthManagerException extends RuntimeException {
         this.errorType = errorType;
     }
 
+    public AuthManagerException(ErrorType errorType,String customMessage){
+        super(customMessage);
+        this.errorType=errorType;
+    }
+
 }
