@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.bilgeadam.constant.EndPoints.SAVE;
-import static com.bilgeadam.constant.EndPoints.USER;
+import static com.bilgeadam.constant.EndPoints.*;
+
 @RestController
 @RequestMapping(USER)
 @RequiredArgsConstructor
@@ -18,8 +18,11 @@ public class UserController {
 
 
     @PostMapping(SAVE)
-    public ResponseEntity<UserProfile> save(@RequestBody UserSaveRequestDto dto){
+    public ResponseEntity<Boolean> save(@RequestBody UserSaveRequestDto dto){
         return  ResponseEntity.ok(userService.createNewUser(dto));
     }
-
+    @PostMapping(ACTIVATE_STATUS)
+    public ResponseEntity<String> activateStatus(@RequestParam String token){
+        return  ResponseEntity.ok(userService.activateStatus(token));
+    }
 }

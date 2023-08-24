@@ -7,6 +7,7 @@ import com.bilgeadam.dto.request.RegisterRequestDto;
 import com.bilgeadam.dto.response.RegisterResponseDto;
 import com.bilgeadam.exception.AuthManagerException;
 import com.bilgeadam.exception.ErrorType;
+import com.bilgeadam.manager.IUserManager;
 import com.bilgeadam.mapper.IAuthMapper;
 import com.bilgeadam.repository.IAuthRepository;
 import com.bilgeadam.repository.entity.Auth;
@@ -15,6 +16,7 @@ import com.bilgeadam.utility.CodeGenerator;
 import com.bilgeadam.utility.JwtTokenManager;
 import com.bilgeadam.utility.ServiceManager;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -44,19 +46,29 @@ public class AuthService extends ServiceManager<Auth, Long> {
 
     private final JwtTokenManager jwtTokenManager;
 
-    public AuthService(IAuthRepository authRepository, JwtTokenManager jwtTokenManager) {
+    private final IUserManager userManager;
+
+    public AuthService(IAuthRepository authRepository, JwtTokenManager jwtTokenManager, IUserManager userManager) {
         super(authRepository);
         this.authRepository = authRepository;
         this.jwtTokenManager = jwtTokenManager;
+        this.userManager = userManager;
     }
 
+    @Transactional
     public RegisterResponseDto register(RegisterRequestDto dto){
         Auth auth = IAuthMapper.INSTANCE.toAuth(dto);
         auth.setActivationCode(CodeGenerator.generateCode());
         if (authRepository.existsByUsername(dto.getUsername())){
             throw new AuthManagerException(ErrorType.USERNAME_ALREADY_EXIST);
         }
-        save(auth);
+            save(auth);
+            // bir metot yazacağiz 2 microservis arası haberleşme için
+
+            userManager.save(IAuthMapper.INSTANCE.toUserSaveRequestDto(auth));
+
+
+
         RegisterResponseDto responseDto = IAuthMapper.INSTANCE.toRegisterResponseDto(auth);
         String token=jwtTokenManager.createToken(auth.getId())
                 .orElseThrow(()->new AuthManagerException(ErrorType.INVALID_TOKEN));
@@ -78,7 +90,7 @@ public class AuthService extends ServiceManager<Auth, Long> {
                 .orElseThrow(()-> new AuthManagerException(ErrorType.TOKEN_NOT_CREATED));
     }
 
-
+    @Transactional
     public String activateStatus(ActivateRequestDto dto){
         Optional<Long> id=jwtTokenManager.getIdFromToken(dto.getToken());
         if (id.isEmpty()){
@@ -94,6 +106,7 @@ public class AuthService extends ServiceManager<Auth, Long> {
         if(dto.getActivationCode().equals(optionalAuth.get().getActivationCode())){
             optionalAuth.get().setStatus(EStatus.ACTIVE);
             update(optionalAuth.get());
+            userManager.activateStatus(dto.getToken());
             return "Hesabınız aktive edilmiştir";
         }else {
             throw new AuthManagerException(ErrorType.INVALID_CODE);
