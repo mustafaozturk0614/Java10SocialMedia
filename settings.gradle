@@ -1,3 +1,4 @@
 rootProject.name = 'Java10SocialMedia'
 include 'auth-service'
+include 'user-service'
 
