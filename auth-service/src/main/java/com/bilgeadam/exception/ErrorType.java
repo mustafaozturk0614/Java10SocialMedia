@@ -19,6 +19,7 @@ public enum ErrorType {
     DATA_INTEGRITY(4116, "hatalı veri",HttpStatus.BAD_REQUEST),
     LOGIN_ERROR(4117, "Kullanıcı adı veya şifre hatalı!!!",HttpStatus.BAD_REQUEST),
     INVALID_TOKEN(4118, "Geçersiz Token !!!",HttpStatus.BAD_REQUEST),
+    TOKEN_NOT_CREATED(4119, "Token Oluşturulamadı !!!",HttpStatus.BAD_REQUEST),
 
 
     ;

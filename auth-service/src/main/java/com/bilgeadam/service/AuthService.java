@@ -12,6 +12,7 @@ import com.bilgeadam.repository.IAuthRepository;
 import com.bilgeadam.repository.entity.Auth;
 import com.bilgeadam.repository.enums.EStatus;
 import com.bilgeadam.utility.CodeGenerator;
+import com.bilgeadam.utility.JwtTokenManager;
 import com.bilgeadam.utility.ServiceManager;
 import org.springframework.stereotype.Service;
 
@@ -41,9 +42,12 @@ public class AuthService extends ServiceManager<Auth, Long> {
 
     private final IAuthRepository authRepository;
 
-    public AuthService(IAuthRepository authRepository) {
+    private final JwtTokenManager jwtTokenManager;
+
+    public AuthService(IAuthRepository authRepository, JwtTokenManager jwtTokenManager) {
         super(authRepository);
         this.authRepository = authRepository;
+        this.jwtTokenManager = jwtTokenManager;
     }
 
     public RegisterResponseDto register(RegisterRequestDto dto){
@@ -54,10 +58,14 @@ public class AuthService extends ServiceManager<Auth, Long> {
         }
         save(auth);
         RegisterResponseDto responseDto = IAuthMapper.INSTANCE.toRegisterResponseDto(auth);
+        String token=jwtTokenManager.createToken(auth.getId())
+                .orElseThrow(()->new AuthManagerException(ErrorType.INVALID_TOKEN));
+
+        responseDto.setToken(token);
 
         return responseDto;
     }
-    public Boolean login(LoginRequestDto dto){
+    public String login(LoginRequestDto dto){
         Optional<Auth> optionalAuth = authRepository.findOptionalByUsernameAndPassword(dto.getUsername(), dto.getPassword());
         if(optionalAuth.isEmpty()){
             throw new AuthManagerException(ErrorType.LOGIN_ERROR);
@@ -66,13 +74,17 @@ public class AuthService extends ServiceManager<Auth, Long> {
             throw new AuthManagerException(ErrorType.ACCOUNT_NOT_ACTIVE);
         }
 
-        return true;
+        return jwtTokenManager.createToken(optionalAuth.get().getId(),optionalAuth.get().getRole())
+                .orElseThrow(()-> new AuthManagerException(ErrorType.TOKEN_NOT_CREATED));
     }
 
 
     public String activateStatus(ActivateRequestDto dto){
-        Optional<Auth> optionalAuth = findById(dto.getId());
-
+        Optional<Long> id=jwtTokenManager.getIdFromToken(dto.getToken());
+        if (id.isEmpty()){
+            throw  new AuthManagerException(ErrorType.INVALID_TOKEN);
+        }
+        Optional<Auth> optionalAuth = findById(id.get());
         if(optionalAuth.isEmpty()){
             throw new AuthManagerException(ErrorType.USER_NOT_FOUND);
         }

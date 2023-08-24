@@ -10,3 +10,6 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
+jwt:
+  secretKey: ${java10secretkey}
+  issuer: ${java10issuer}
