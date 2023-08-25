@@ -2,6 +2,7 @@ package com.bilgeadam.controller;
 
 
 import com.bilgeadam.dto.request.ActivateRequestDto;
+import com.bilgeadam.dto.request.AuthUpdateRequestDto;
 import com.bilgeadam.dto.request.LoginRequestDto;
 import com.bilgeadam.dto.request.RegisterRequestDto;
 import com.bilgeadam.dto.response.RegisterResponseDto;
@@ -47,6 +48,11 @@ public class AuthController {
     @GetMapping("/get_id_from_token")
     public  ResponseEntity<Long> getIdFromToken(String token){
         return ResponseEntity.ok(jwtTokenManager.getIdFromToken(token).get());
+    }
+     @PutMapping(UPDATE)
+    public ResponseEntity< String> updateAuth(@RequestBody AuthUpdateRequestDto dto){
+        return ResponseEntity.ok(authService.updateAuth(dto))
+                ;
     }
 
 }

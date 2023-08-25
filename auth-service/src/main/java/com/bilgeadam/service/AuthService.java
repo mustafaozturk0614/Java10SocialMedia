@@ -2,6 +2,7 @@ package com.bilgeadam.service;
 
 
 import com.bilgeadam.dto.request.ActivateRequestDto;
+import com.bilgeadam.dto.request.AuthUpdateRequestDto;
 import com.bilgeadam.dto.request.LoginRequestDto;
 import com.bilgeadam.dto.request.RegisterRequestDto;
 import com.bilgeadam.dto.response.RegisterResponseDto;
@@ -111,5 +112,17 @@ public class AuthService extends ServiceManager<Auth, Long> {
         }else {
             throw new AuthManagerException(ErrorType.INVALID_CODE);
         }
+    }
+
+
+    public String updateAuth(AuthUpdateRequestDto dto){
+        Optional<Auth> auth=findById(dto.getId());
+        if (auth.isEmpty()){
+            throw new AuthManagerException(ErrorType.USER_NOT_FOUND);
+        }
+        auth.get().setEmail(dto.getEmail());
+        auth.get().setUsername(dto.getUsername());
+        update(auth.get());
+        return "Guncelleme başarılı";
     }
 }

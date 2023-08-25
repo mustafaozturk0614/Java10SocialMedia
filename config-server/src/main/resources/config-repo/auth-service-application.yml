@@ -1,0 +1,15 @@
+server:
+  port: 7071
+spring:
+  datasource:
+    username: postgres
+    password: root
+    url: jdbc:postgresql://localhost:5432/java10SocialAuth
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+jwt:
+  secretKey: ${java10secretkey}
+  issuer: ${java10issuer}

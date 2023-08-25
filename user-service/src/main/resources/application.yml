@@ -1,15 +1,8 @@
-server:
-  port: 7072
 spring:
-  datasource:
-    username: postgres
-    password: root
-    url: jdbc:postgresql://localhost:5432/java10SocialUser
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: update
-jwt:
-  secretKey: ${java10secretkey}
-  issuer: ${java10issuer}
+  cloud:
+    config:
+      uri: http://localhost:8889
+  config:
+    import: "configserver:"
+  application:
+    name: user-service-application
