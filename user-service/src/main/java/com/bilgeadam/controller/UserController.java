@@ -5,10 +5,13 @@ import com.bilgeadam.repository.entity.UserProfile;
 import com.bilgeadam.service.UserService;
 import com.bilgeadam.utility.JwtTokenManager;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+
+import java.util.List;
 
 import static com.bilgeadam.constant.EndPoints.*;
 
@@ -33,4 +36,10 @@ public class UserController {
     public ResponseEntity<String> updateUserProfile(@Valid @RequestBody UserProfileUpdateRequestDto dto){
         return ResponseEntity.ok(userService.updateUserProfile(dto));
     }
+
+    @GetMapping(FIND_ALL)
+    public ResponseEntity<List<UserProfile>> findAll(){
+        return ResponseEntity.ok(userService.findAll());
+    }
+
 }
