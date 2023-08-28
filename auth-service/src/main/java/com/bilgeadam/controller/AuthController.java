@@ -58,6 +58,11 @@ public class AuthController {
 
     @GetMapping(FIND_ALL)
     public ResponseEntity<List<Auth>> findAll(){
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         return ResponseEntity.ok(authService.findAll());
     }
 
