@@ -4,6 +4,7 @@ package com.bilgeadam.mapper;
 
 import com.bilgeadam.dto.request.UserProfileUpdateRequestDto;
 import com.bilgeadam.dto.request.UserSaveRequestDto;
+import com.bilgeadam.rabbitmq.model.RegisterModel;
 import com.bilgeadam.repository.entity.UserProfile;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -16,6 +17,7 @@ public interface IUserMapper {
     IUserMapper INSTANCE = Mappers.getMapper(IUserMapper.class);
 
     UserProfile toUserProfile(UserSaveRequestDto dto);
+    UserProfile toUserProfile(RegisterModel model);
 
 
     UserProfile toUserProfile(UserProfileUpdateRequestDto dto);

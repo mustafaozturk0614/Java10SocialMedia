@@ -1,15 +1,19 @@
 package com.bilgeadam.config.rabbitmq;
 
 import org.springframework.amqp.core.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMqConfig {
+        @Value("${rabbitmq.auth-exchange}")
+        private String exchange;
+        @Value("${rabbitmq.register-binding-key}")
+        private String registerBindingKey;
 
-        private String exchange="auth-exchange";
-        private String registerBindingKey="register-key";
-        private String registerQueue="register-queue";
+       @Value("${rabbitmq.register-queue}")
+        private String registerQueueName;
 
         @Bean
         DirectExchange exchange(){
@@ -18,7 +22,7 @@ public class RabbitMqConfig {
 
         @Bean
         Queue registerQueue(){
-            return new Queue(registerQueue);
+            return new Queue(registerQueueName);
         }
 
         @Bean

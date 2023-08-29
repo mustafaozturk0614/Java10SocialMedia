@@ -1,6 +1,16 @@
 server:
   port: 7071
 spring:
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: java10
+    password: 123
+  zipkin:
+    enabled: true
+    base-url: http://localhost:9411
+    service:
+      name: auth-service
   datasource:
     username: postgres
     password: root
@@ -13,3 +23,7 @@ spring:
 jwt:
   secretKey: ${java10secretkey}
   issuer: ${java10issuer}
+rabbitmq:
+  auth-exchange: auth-exchange
+  register-binding-key: register-key
+  register-queue: register-queue

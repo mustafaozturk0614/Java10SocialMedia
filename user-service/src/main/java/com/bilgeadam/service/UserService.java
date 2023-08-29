@@ -9,6 +9,7 @@ import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.exception.UserManagerException;
 import com.bilgeadam.manager.IAuthManager;
 import com.bilgeadam.mapper.IUserMapper;
+import com.bilgeadam.rabbitmq.model.RegisterModel;
 import com.bilgeadam.repository.IUserRepository;
 import com.bilgeadam.repository.entity.UserProfile;
 import com.bilgeadam.repository.enums.EStatus;
@@ -99,5 +100,15 @@ public class UserService extends ServiceManager<UserProfile, Long> {
         return  "Güncelleme başarılı";
 
 
+    }
+
+    public Boolean createNewUserWithRabbitmq(RegisterModel model) {
+        try {
+            UserProfile userProfile= IUserMapper.INSTANCE.toUserProfile(model);
+            save(userProfile);
+            return true;
+        }catch (Exception e){
+            throw  new UserManagerException(ErrorType.USER_NOT_CREATED);
+        }
     }
 }

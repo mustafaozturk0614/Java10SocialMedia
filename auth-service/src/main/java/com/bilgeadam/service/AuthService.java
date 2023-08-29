@@ -10,6 +10,7 @@ import com.bilgeadam.exception.AuthManagerException;
 import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.manager.IUserManager;
 import com.bilgeadam.mapper.IAuthMapper;
+import com.bilgeadam.rabbitmq.producer.RegisterProducer;
 import com.bilgeadam.repository.IAuthRepository;
 import com.bilgeadam.repository.entity.Auth;
 import com.bilgeadam.repository.enums.EStatus;
@@ -49,11 +50,14 @@ public class AuthService extends ServiceManager<Auth, Long> {
 
     private final IUserManager userManager;
 
-    public AuthService(IAuthRepository authRepository, JwtTokenManager jwtTokenManager, IUserManager userManager) {
+    private final RegisterProducer registerProducer;
+
+    public AuthService(IAuthRepository authRepository, JwtTokenManager jwtTokenManager, IUserManager userManager, RegisterProducer registerProducer) {
         super(authRepository);
         this.authRepository = authRepository;
         this.jwtTokenManager = jwtTokenManager;
         this.userManager = userManager;
+        this.registerProducer = registerProducer;
     }
 
     @Transactional
@@ -65,11 +69,7 @@ public class AuthService extends ServiceManager<Auth, Long> {
         }
             save(auth);
             // bir metot yazacağiz 2 microservis arası haberleşme için
-
             userManager.save(IAuthMapper.INSTANCE.toUserSaveRequestDto(auth));
-
-
-
         RegisterResponseDto responseDto = IAuthMapper.INSTANCE.toRegisterResponseDto(auth);
         String token=jwtTokenManager.createToken(auth.getId())
                 .orElseThrow(()->new AuthManagerException(ErrorType.INVALID_TOKEN));
@@ -78,6 +78,30 @@ public class AuthService extends ServiceManager<Auth, Long> {
 
         return responseDto;
     }
+
+    @Transactional
+    public RegisterResponseDto registerWithRabbitMq(RegisterRequestDto dto){
+        Auth auth = IAuthMapper.INSTANCE.toAuth(dto);
+        auth.setActivationCode(CodeGenerator.generateCode());
+        if (authRepository.existsByUsername(dto.getUsername())){
+            throw new AuthManagerException(ErrorType.USERNAME_ALREADY_EXIST);
+        }
+        save(auth);
+        //rabbit mq ile haberleştireceğiz
+            registerProducer.sendNewUser(IAuthMapper.INSTANCE.toRegisterModel(auth));
+        //register token olusturma
+        RegisterResponseDto responseDto = IAuthMapper.INSTANCE.toRegisterResponseDto(auth);
+        String token=jwtTokenManager.createToken(auth.getId())
+                .orElseThrow(()->new AuthManagerException(ErrorType.INVALID_TOKEN));
+
+        responseDto.setToken(token);
+
+        return responseDto;
+    }
+
+
+
+
     public String login(LoginRequestDto dto){
         Optional<Auth> optionalAuth = authRepository.findOptionalByUsernameAndPassword(dto.getUsername(), dto.getPassword());
         if(optionalAuth.isEmpty()){
@@ -107,7 +131,8 @@ public class AuthService extends ServiceManager<Auth, Long> {
         if(dto.getActivationCode().equals(optionalAuth.get().getActivationCode())){
             optionalAuth.get().setStatus(EStatus.ACTIVE);
             update(optionalAuth.get());
-            userManager.activateStatus(dto.getToken());
+           // userManager.activateStatus(dto.getToken());
+
             return "Hesabınız aktive edilmiştir";
         }else {
             throw new AuthManagerException(ErrorType.INVALID_CODE);
