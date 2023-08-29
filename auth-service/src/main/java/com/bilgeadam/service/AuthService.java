@@ -10,6 +10,7 @@ import com.bilgeadam.exception.AuthManagerException;
 import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.manager.IUserManager;
 import com.bilgeadam.mapper.IAuthMapper;
+import com.bilgeadam.rabbitmq.producer.ActivationProducer;
 import com.bilgeadam.rabbitmq.producer.RegisterProducer;
 import com.bilgeadam.repository.IAuthRepository;
 import com.bilgeadam.repository.entity.Auth;
@@ -52,12 +53,15 @@ public class AuthService extends ServiceManager<Auth, Long> {
 
     private final RegisterProducer registerProducer;
 
-    public AuthService(IAuthRepository authRepository, JwtTokenManager jwtTokenManager, IUserManager userManager, RegisterProducer registerProducer) {
+    private final ActivationProducer activationProducer;
+
+    public AuthService(IAuthRepository authRepository, JwtTokenManager jwtTokenManager, IUserManager userManager, RegisterProducer registerProducer, ActivationProducer activationProducer) {
         super(authRepository);
         this.authRepository = authRepository;
         this.jwtTokenManager = jwtTokenManager;
         this.userManager = userManager;
         this.registerProducer = registerProducer;
+        this.activationProducer = activationProducer;
     }
 
     @Transactional
@@ -131,8 +135,8 @@ public class AuthService extends ServiceManager<Auth, Long> {
         if(dto.getActivationCode().equals(optionalAuth.get().getActivationCode())){
             optionalAuth.get().setStatus(EStatus.ACTIVE);
             update(optionalAuth.get());
-           // userManager.activateStatus(dto.getToken());
-
+           // userManager.activateStatus(dto.getToken()); // open feign ile haberleşme
+            activationProducer.activateStatus(dto.getToken()); // rabbitmq ile haberleşme
             return "Hesabınız aktive edilmiştir";
         }else {
             throw new AuthManagerException(ErrorType.INVALID_CODE);

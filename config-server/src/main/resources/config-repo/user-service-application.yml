@@ -25,3 +25,4 @@ jwt:
   issuer: ${java10issuer}
 rabbitmq:
   register-queue: register-queue
+  activation-queue: queue-activation

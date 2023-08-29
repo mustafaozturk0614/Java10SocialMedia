@@ -27,3 +27,5 @@ rabbitmq:
   auth-exchange: auth-exchange
   register-binding-key: register-key
   register-queue: register-queue
+  activation-binding-key: activation-key
+  activation-queue: queue-activation
