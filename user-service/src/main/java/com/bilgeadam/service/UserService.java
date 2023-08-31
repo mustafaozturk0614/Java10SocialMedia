@@ -15,6 +15,7 @@ import com.bilgeadam.repository.entity.UserProfile;
 import com.bilgeadam.repository.enums.EStatus;
 import com.bilgeadam.utility.JwtTokenManager;
 import com.bilgeadam.utility.ServiceManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -110,5 +111,19 @@ public class UserService extends ServiceManager<UserProfile, Long> {
         }catch (Exception e){
             throw  new UserManagerException(ErrorType.USER_NOT_CREATED);
         }
+    }
+
+    @Cacheable(value = "find_by_username")
+    public UserProfile findByUsername(String username){
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        Optional<UserProfile> userProfile=userRepository.findByUsername(username);
+    if (userProfile.isEmpty()){
+        throw new UserManagerException(ErrorType.USER_NOT_FOUND);
+    }
+         return userProfile.get();
     }
 }

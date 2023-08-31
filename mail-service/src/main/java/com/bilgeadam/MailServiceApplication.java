@@ -15,17 +15,17 @@ public class MailServiceApplication {
     }
 
     //deneme amaçlı kod
-    @Autowired
-    private JavaMailSender javaMailSender;
-
-    @EventListener(ApplicationReadyEvent.class)
-    public  void sendMail(){
-        SimpleMailMessage mailMessage=new SimpleMailMessage();
-        mailMessage.setFrom("${java10_mail}");
-        mailMessage.setTo("java9and10@gmail.com");
-        mailMessage.setSubject("AKTIVASYON KODUNUZ...");
-        mailMessage.setText("lkD345");
-        javaMailSender.send(mailMessage);
-    }
+//    @Autowired
+//    private JavaMailSender javaMailSender;
+//
+//    @EventListener(ApplicationReadyEvent.class)
+//    public  void sendMail(){
+//        SimpleMailMessage mailMessage=new SimpleMailMessage();
+//        mailMessage.setFrom("${java10_mail}");
+//        mailMessage.setTo("java9and10@gmail.com");
+//        mailMessage.setSubject("AKTIVASYON KODUNUZ...");
+//        mailMessage.setText("lkD345");
+//        javaMailSender.send(mailMessage);
+//    }
 
 }

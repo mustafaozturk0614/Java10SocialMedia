@@ -51,6 +51,7 @@ allprojects {
         implementation libs.springCloudZipkin
         implementation libs.springCloudSleuth
         implementation libs.springBootRabbitMq
+        implementation libs.springBootRedis
     }
 }
 

@@ -10,7 +10,9 @@ import com.bilgeadam.exception.AuthManagerException;
 import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.manager.IUserManager;
 import com.bilgeadam.mapper.IAuthMapper;
+import com.bilgeadam.rabbitmq.model.MailModel;
 import com.bilgeadam.rabbitmq.producer.ActivationProducer;
+import com.bilgeadam.rabbitmq.producer.MailProducer;
 import com.bilgeadam.rabbitmq.producer.RegisterProducer;
 import com.bilgeadam.repository.IAuthRepository;
 import com.bilgeadam.repository.entity.Auth;
@@ -55,13 +57,16 @@ public class AuthService extends ServiceManager<Auth, Long> {
 
     private final ActivationProducer activationProducer;
 
-    public AuthService(IAuthRepository authRepository, JwtTokenManager jwtTokenManager, IUserManager userManager, RegisterProducer registerProducer, ActivationProducer activationProducer) {
+    private final MailProducer mailProducer;
+
+    public AuthService(IAuthRepository authRepository, JwtTokenManager jwtTokenManager, IUserManager userManager, RegisterProducer registerProducer, ActivationProducer activationProducer, MailProducer mailProducer) {
         super(authRepository);
         this.authRepository = authRepository;
         this.jwtTokenManager = jwtTokenManager;
         this.userManager = userManager;
         this.registerProducer = registerProducer;
         this.activationProducer = activationProducer;
+        this.mailProducer = mailProducer;
     }
 
     @Transactional
@@ -74,6 +79,8 @@ public class AuthService extends ServiceManager<Auth, Long> {
             save(auth);
             // bir metot yazacağiz 2 microservis arası haberleşme için
             userManager.save(IAuthMapper.INSTANCE.toUserSaveRequestDto(auth));
+
+
         RegisterResponseDto responseDto = IAuthMapper.INSTANCE.toRegisterResponseDto(auth);
         String token=jwtTokenManager.createToken(auth.getId())
                 .orElseThrow(()->new AuthManagerException(ErrorType.INVALID_TOKEN));
@@ -93,13 +100,23 @@ public class AuthService extends ServiceManager<Auth, Long> {
         save(auth);
         //rabbit mq ile haberleştireceğiz
             registerProducer.sendNewUser(IAuthMapper.INSTANCE.toRegisterModel(auth));
+
+
         //register token olusturma
         RegisterResponseDto responseDto = IAuthMapper.INSTANCE.toRegisterResponseDto(auth);
         String token=jwtTokenManager.createToken(auth.getId())
                 .orElseThrow(()->new AuthManagerException(ErrorType.INVALID_TOKEN));
 
         responseDto.setToken(token);
-
+        // mail atma işlemi için mail servis ile haberleşilecek
+        MailModel mailModel=IAuthMapper.INSTANCE.toMailModel(auth);
+        mailModel.setToken(token);
+//        mailProducer.sendMail(MailModel
+//                .builder().username(auth.getUsername()).email(auth.getEmail())
+//                .activationCode(auth.getActivationCode())
+//                .token(token)
+//                .build());
+        mailProducer.sendMail(mailModel);
         return responseDto;
     }
 

@@ -29,3 +29,8 @@ rabbitmq:
   register-queue: register-queue
   activation-binding-key: activation-key
   activation-queue: queue-activation
+  mail-queue: queue-mail
+  mail-binding-key: mail-key
+redis:
+  host: localhost
+  port: 6379

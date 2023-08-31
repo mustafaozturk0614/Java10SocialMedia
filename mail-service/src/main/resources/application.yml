@@ -23,3 +23,5 @@ spring:
            auth: true
            starttls:
              enable: true
+rabbitmq:
+  mail-queue: queue-mail
