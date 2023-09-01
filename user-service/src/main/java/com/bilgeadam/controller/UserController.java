@@ -2,6 +2,7 @@ package com.bilgeadam.controller;
 import com.bilgeadam.dto.request.UserProfileUpdateRequestDto;
 import com.bilgeadam.dto.request.UserSaveRequestDto;
 import com.bilgeadam.repository.entity.UserProfile;
+import com.bilgeadam.repository.enums.EStatus;
 import com.bilgeadam.service.UserService;
 import com.bilgeadam.utility.JwtTokenManager;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +49,20 @@ public class UserController {
     @GetMapping("/find_by_username/{username}")
     public ResponseEntity<UserProfile> findByUsername(@PathVariable String username){
         return ResponseEntity.ok(userService.findByUsername(username));
+    }
+    @GetMapping("/find_by_status/{status}")
+    public ResponseEntity<List<UserProfile>> findByStatus(@PathVariable EStatus status){
+        return ResponseEntity.ok(userService.findByStatus(status));
+    }
+
+    @GetMapping("/find_by_status2/{status}")
+    public ResponseEntity<List<UserProfile>> findByStatus(@PathVariable String status){
+        return ResponseEntity.ok(userService.findByStatus(status));
+    }
+    @DeleteMapping(DELETE_BY_ID)
+    public ResponseEntity<String> deleteById(@RequestParam Long id){
+
+      return   ResponseEntity.ok(userService.deleteUserProfile(id));
     }
 
 }

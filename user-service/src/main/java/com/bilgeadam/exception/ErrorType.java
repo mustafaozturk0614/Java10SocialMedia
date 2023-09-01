@@ -16,7 +16,10 @@ public enum ErrorType {
     UNEXPECTED_ERROR(4213,"Beklenmeyen bir hata olustu",HttpStatus.BAD_REQUEST),
     INVALID_TOKEN(4214, "Geçersiz Token !!!",HttpStatus.BAD_REQUEST),
     TOKEN_NOT_CREATED(4215, "Token Oluşturulamadı !!!",HttpStatus.BAD_REQUEST),
-    USER_NOT_CREATED(4216, "Kullanıcı olusturulamadı",HttpStatus.BAD_REQUEST );
+    USER_NOT_CREATED(4216, "Kullanıcı olusturulamadı",HttpStatus.BAD_REQUEST ),
+    STATUS_NOT_FOUND(4217, "Böyle bir kullanıcı durumu bulunamadı",HttpStatus.BAD_REQUEST ),
+
+    ;
 
 
     private int code;

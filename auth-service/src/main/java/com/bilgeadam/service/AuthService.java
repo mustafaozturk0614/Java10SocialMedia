@@ -171,4 +171,18 @@ public class AuthService extends ServiceManager<Auth, Long> {
         update(auth.get());
         return "Guncelleme başarılı";
     }
+
+    public String deleteAuth(Long id) {
+        Optional<Auth> auth=findById(id);
+        if (auth.isEmpty()){
+            throw new AuthManagerException(ErrorType.USER_NOT_FOUND);
+        }
+        if (auth.get().getStatus().equals(EStatus.DELETED)){
+            throw new AuthManagerException(ErrorType.USER_NOT_FOUND,"Hesap zaten silinmiş");
+        }
+        auth.get().setStatus(EStatus.DELETED);
+        update(auth.get());
+        userManager.deleteById(id);
+        return id + "id li kullanıcı başarıyla slindi";
+    }
 }

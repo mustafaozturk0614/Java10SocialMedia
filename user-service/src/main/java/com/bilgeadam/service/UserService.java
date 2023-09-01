@@ -15,10 +15,13 @@ import com.bilgeadam.repository.entity.UserProfile;
 import com.bilgeadam.repository.enums.EStatus;
 import com.bilgeadam.utility.JwtTokenManager;
 import com.bilgeadam.utility.ServiceManager;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 /*
     update metodu yazalım
@@ -34,11 +37,14 @@ public class UserService extends ServiceManager<UserProfile, Long> {
 
     private final IAuthManager authManager;
 
-    public UserService(IUserRepository userRepository, JwtTokenManager jwtTokenManager, IAuthManager authManager) {
+    private final CacheManager cacheManager;
+
+    public UserService(IUserRepository userRepository, JwtTokenManager jwtTokenManager, IAuthManager authManager, CacheManager cacheManager) {
         super(userRepository);
         this.userRepository = userRepository;
         this.jwtTokenManager = jwtTokenManager;
         this.authManager = authManager;
+        this.cacheManager = cacheManager;
     }
 
     public Boolean createNewUser(UserSaveRequestDto dto) {
@@ -98,6 +104,8 @@ public class UserService extends ServiceManager<UserProfile, Long> {
         userProfile.get().setSurName(dto.getSurName());
         userProfile.get().setAvatar(dto.getAvatar());
         update(userProfile.get());
+      //  cacheManager.getCache("find_by_username").evict(userProfile.get().getUsername()); // silme işlemi
+        cacheManager.getCache("find_by_username").put(userProfile.get().getUsername(),userProfile.get()); //guncelleme
         return  "Güncelleme başarılı";
 
 
@@ -125,5 +133,48 @@ public class UserService extends ServiceManager<UserProfile, Long> {
         throw new UserManagerException(ErrorType.USER_NOT_FOUND);
     }
          return userProfile.get();
+    }
+
+    @Cacheable(value = "find_by_status")
+    public List<UserProfile> findByStatus(EStatus status) {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        List<UserProfile> list=userRepository.findByStatus(status);
+//        if (list.isEmpty()){
+//            throw new RuntimeException("Herhangi bir veri bulunamdı");
+//        }
+        return list;
+    }
+
+    @Cacheable(value = "find_by_status2",key = "#status.toUpperCase(T(java.util.Locale).ENGLISH)")
+    public List<UserProfile> findByStatus(String status) {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        EStatus myStatus;
+        try {
+            myStatus = EStatus.valueOf(status.toUpperCase(Locale.ENGLISH));
+        } catch (Exception e) {
+            throw new UserManagerException(ErrorType.STATUS_NOT_FOUND);
+        }
+        return   userRepository.findByStatus(myStatus);
+
+    }
+
+
+    public String deleteUserProfile(Long id) {
+        Optional<UserProfile> userProfile=userRepository.findByAuthId(id);
+        if (userProfile.isEmpty()){
+            throw new UserManagerException(ErrorType.USER_NOT_FOUND);
+        }
+        userProfile.get().setStatus(EStatus.DELETED);
+        update(userProfile.get());
+        cacheManager.getCache("find_by_username").evict(userProfile.get().getUsername());
+        return userProfile.get().getId()+ "id li kullancı slinmiştir";
     }
 }

@@ -100,6 +100,10 @@ public class AuthController {
         }catch (Exception e){
             throw new RuntimeException(e.getMessage());
         }
+    }
 
+        @DeleteMapping(DELETE_BY_ID)
+    public ResponseEntity<String> deleteById(@RequestParam Long id){
+      return   ResponseEntity.ok(authService.deleteAuth(id));
     }
 }
