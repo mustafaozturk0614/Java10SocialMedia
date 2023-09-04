@@ -62,3 +62,13 @@ services:
       - elasticsearch
     networks:
       - java_10_network
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: root
+    ports:
+      - "27010:27017"
+    networks:
+      - java_10_network

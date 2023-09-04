@@ -7,6 +7,11 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMqConfig {
+    @Value("${rabbitmq.register-elastic-queue}")
+    private String registerElasticQueueName;
 
-
+    @Bean
+    public Queue registerElasticQueue() {
+        return new Queue(registerElasticQueueName);
+    }
 }

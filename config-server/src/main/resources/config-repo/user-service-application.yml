@@ -11,21 +11,22 @@ spring:
     base-url: http://localhost:9411
     service:
       name: user-service
-  datasource:
-    username: postgres
-    password: root
-    url: jdbc:postgresql://localhost:5432/java10SocialUser
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: update
+  data:
+    mongodb:
+      host: localhost
+      port: 27010
+      username: java10user
+      password: root
+      database: userDb
 jwt:
   secretKey: ${java10secretkey}
   issuer: ${java10issuer}
 rabbitmq:
   register-queue: register-queue
   activation-queue: queue-activation
+  register-elastic-queue: register-elastic-queue
+  register-elastic-binding: register-elastic-binding
+  user-exchange: exchange-user
 redis:
   host: localhost
   port: 6379

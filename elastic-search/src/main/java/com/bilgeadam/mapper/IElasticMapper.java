@@ -1,6 +1,7 @@
 package com.bilgeadam.mapper;
 
 import com.bilgeadam.dto.response.UserProfileFindAllResponseDto;
+import com.bilgeadam.rabbitmq.model.RegisterElasticModel;
 import com.bilgeadam.repository.entity.UserProfile;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
@@ -14,5 +15,5 @@ public interface IElasticMapper {
 
     List<UserProfile> toUserProfiles(List<UserProfileFindAllResponseDto> dtos);
 
-
+    UserProfile toUserProfile(RegisterElasticModel model);
 }

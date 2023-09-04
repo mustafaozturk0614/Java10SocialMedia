@@ -11,6 +11,7 @@ import com.bilgeadam.exception.UserManagerException;
 import com.bilgeadam.manager.IAuthManager;
 import com.bilgeadam.mapper.IUserMapper;
 import com.bilgeadam.rabbitmq.model.RegisterModel;
+import com.bilgeadam.rabbitmq.producer.RegisterElasticProducer;
 import com.bilgeadam.repository.IUserRepository;
 import com.bilgeadam.repository.entity.UserProfile;
 import com.bilgeadam.repository.enums.EStatus;
@@ -33,7 +34,7 @@ import java.util.stream.Collectors;
  */
 
 @Service
-public class UserService extends ServiceManager<UserProfile, Long> {
+public class UserService extends ServiceManager<UserProfile, String> {
     private final IUserRepository userRepository;
     private final JwtTokenManager jwtTokenManager;
 
@@ -41,17 +42,21 @@ public class UserService extends ServiceManager<UserProfile, Long> {
 
     private final CacheManager cacheManager;
 
-    public UserService(IUserRepository userRepository, JwtTokenManager jwtTokenManager, IAuthManager authManager, CacheManager cacheManager) {
+    private final RegisterElasticProducer registerElasticProducer;
+
+    public UserService(IUserRepository userRepository, JwtTokenManager jwtTokenManager, IAuthManager authManager, CacheManager cacheManager, RegisterElasticProducer registerElasticProducer) {
         super(userRepository);
         this.userRepository = userRepository;
         this.jwtTokenManager = jwtTokenManager;
         this.authManager = authManager;
         this.cacheManager = cacheManager;
+        this.registerElasticProducer = registerElasticProducer;
     }
 
     public Boolean createNewUser(UserSaveRequestDto dto) {
         try {
             UserProfile userProfile= IUserMapper.INSTANCE.toUserProfile(dto);
+
           save(userProfile);
           return true;
         }catch (Exception e){
@@ -117,6 +122,7 @@ public class UserService extends ServiceManager<UserProfile, Long> {
         try {
             UserProfile userProfile= IUserMapper.INSTANCE.toUserProfile(model);
             save(userProfile);
+            registerElasticProducer.sendNewUser(IUserMapper.INSTANCE.toRegisterElasticModel(userProfile));
             return true;
         }catch (Exception e){
             throw  new UserManagerException(ErrorType.USER_NOT_CREATED);
