@@ -5,6 +5,7 @@ package com.bilgeadam.service;
 import com.bilgeadam.dto.request.AuthUpdateRequestDto;
 import com.bilgeadam.dto.request.UserProfileUpdateRequestDto;
 import com.bilgeadam.dto.request.UserSaveRequestDto;
+import com.bilgeadam.dto.response.UserProfileFindAllResponseDto;
 import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.exception.UserManagerException;
 import com.bilgeadam.manager.IAuthManager;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Collectors;
 /*
     update metodu yazalım
     update metodu userporfile bilgilerimi guncelleyecek aynı zamanda
@@ -176,5 +178,12 @@ public class UserService extends ServiceManager<UserProfile, Long> {
         update(userProfile.get());
         cacheManager.getCache("find_by_username").evict(userProfile.get().getUsername());
         return userProfile.get().getId()+ "id li kullancı slinmiştir";
+    }
+
+    public List<UserProfileFindAllResponseDto> findAllUserProfile() {
+        List<UserProfile> userProfileList=findAll();
+      return  userProfileList.stream()
+              .map(x->IUserMapper.INSTANCE.toUserProfileFindAllResponseDto(x)).collect(Collectors.toList());
+
     }
 }

@@ -18,6 +18,7 @@ ext {
             springBootMailSender: "org.springframework.boot:spring-boot-starter-mail:$versions.springBoot",
             springBootRedis: "org.springframework.boot:spring-boot-starter-data-redis:$versions.springBoot",
             springBootElasticSearch: "org.springframework.boot:spring-boot-starter-data-elasticsearch:$versions.springBoot",
+            springBootDataMongo: "org.springframework.boot:spring-boot-starter-data-mongodb:$versions.springBoot",
             postgresql        : "org.postgresql:postgresql:$versions.postgresql",
             lombok            : "org.projectlombok:lombok:$versions.lombok",
             mapstruct         : "org.mapstruct:mapstruct:$versions.mapstruct",

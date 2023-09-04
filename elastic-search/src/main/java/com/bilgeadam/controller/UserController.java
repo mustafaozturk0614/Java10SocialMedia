@@ -1,7 +1,11 @@
 package com.bilgeadam.controller;
+import com.bilgeadam.repository.entity.UserProfile;
 import com.bilgeadam.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.bilgeadam.constant.EndPoints.*;
 /*
@@ -13,9 +17,11 @@ import static com.bilgeadam.constant.EndPoints.*;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final JwtTokenManager jwtTokenManager;
 
-
+    @GetMapping(FIND_ALL)
+    public ResponseEntity<Iterable<UserProfile>> findAll(){
+        return ResponseEntity.ok(userService.findAll());
+    }
 
 
 }
