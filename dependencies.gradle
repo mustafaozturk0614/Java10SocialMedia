@@ -19,6 +19,7 @@ ext {
             springBootRedis: "org.springframework.boot:spring-boot-starter-data-redis:$versions.springBoot",
             springBootElasticSearch: "org.springframework.boot:spring-boot-starter-data-elasticsearch:$versions.springBoot",
             springBootDataMongo: "org.springframework.boot:spring-boot-starter-data-mongodb:$versions.springBoot",
+            springBootSecurity:"org.springframework.boot:spring-boot-starter-security:$versions.springBoot",
             postgresql        : "org.postgresql:postgresql:$versions.postgresql",
             lombok            : "org.projectlombok:lombok:$versions.lombok",
             mapstruct         : "org.mapstruct:mapstruct:$versions.mapstruct",

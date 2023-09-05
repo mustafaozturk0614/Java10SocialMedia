@@ -30,3 +30,12 @@ rabbitmq:
 redis:
   host: localhost
   port: 6379
+
+logging:
+  level:
+    root: info
+  file:
+    name: "E:/java10-workspace/log/user.log"
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB

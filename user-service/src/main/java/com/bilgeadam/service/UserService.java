@@ -19,6 +19,7 @@ import com.bilgeadam.utility.JwtTokenManager;
 import com.bilgeadam.utility.ServiceManager;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -191,5 +192,17 @@ public class UserService extends ServiceManager<UserProfile, String> {
       return  userProfileList.stream()
               .map(x->IUserMapper.INSTANCE.toUserProfileFindAllResponseDto(x)).collect(Collectors.toList());
 
+    }
+
+    public Page<UserProfile> findAllByPageable(int pageSize, int pageNumber, String direction, String sortParameter) {
+        Sort sort=Sort.by(Sort.Direction.fromString(direction),sortParameter);
+        Pageable pageable= PageRequest.of(pageNumber,pageSize,sort);
+        return userRepository.findAll(pageable);
+    }
+
+    public Slice<UserProfile> findAllBySLice(int pageSize, int pageNumber, String direction, String sortParameter) {
+        Sort sort=Sort.by(Sort.Direction.fromString(direction),sortParameter);
+        Pageable pageable= PageRequest.of(pageNumber,pageSize,sort);
+        return userRepository.findAll(pageable);
     }
 }

@@ -8,6 +8,8 @@ import com.bilgeadam.service.UserService;
 import com.bilgeadam.utility.JwtTokenManager;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -67,4 +69,15 @@ public class UserController {
       return   ResponseEntity.ok(userService.deleteUserProfile(id));
     }
 
+    @GetMapping("/find_all_by_pageable")
+    public ResponseEntity<Page<UserProfile>> findAllByPageable(int pageSize, int pageNumber,@RequestParam(required = false,defaultValue = "ASC") String direction,@RequestParam(required = false,defaultValue = "id") String sortParameter){
+
+        return ResponseEntity.ok(userService.findAllByPageable(pageSize,pageNumber,direction,sortParameter));
+    }
+
+    @GetMapping("/find_all_by_slice")
+    public ResponseEntity<Slice<UserProfile>> findAllBySlice(int pageSize, int pageNumber, @RequestParam(required = false,defaultValue = "ASC") String direction, @RequestParam(required = false,defaultValue = "id") String sortParameter){
+
+        return ResponseEntity.ok(userService.findAllBySLice(pageSize,pageNumber,direction,sortParameter));
+    }
 }

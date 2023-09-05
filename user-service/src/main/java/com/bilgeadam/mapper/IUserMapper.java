@@ -24,7 +24,7 @@ public interface IUserMapper {
 
     UserProfile toUserProfile(UserProfileUpdateRequestDto dto);
 
-    @Mapping( source = "id",target = "userProfileId")
+   // @Mapping( source = "id",target = "userProfileId")
     UserProfileFindAllResponseDto toUserProfileFindAllResponseDto(UserProfile userProfile);
 
     RegisterElasticModel toRegisterElasticModel(UserProfile userProfile);

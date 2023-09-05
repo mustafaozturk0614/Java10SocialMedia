@@ -2,6 +2,7 @@ package com.bilgeadam.exception;
 
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +19,14 @@ import java.util.List;
 //Aop
 @ControllerAdvice
 //@RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorMessage> handleRunTimeException(RuntimeException ex){
         ex.printStackTrace();
+        log.error(ex.toString());
         return new ResponseEntity<>( createError(ErrorType.UNEXPECTED_ERROR,ex),HttpStatus.BAD_REQUEST);
     }
 
