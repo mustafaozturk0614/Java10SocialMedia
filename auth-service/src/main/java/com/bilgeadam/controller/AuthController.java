@@ -59,9 +59,8 @@ public class AuthController {
         return ResponseEntity.ok(jwtTokenManager.getIdFromToken(token).get());
     }
      @PutMapping(UPDATE)
-    public ResponseEntity< String> updateAuth(@RequestBody AuthUpdateRequestDto dto){
-        return ResponseEntity.ok(authService.updateAuth(dto))
-                ;
+    public ResponseEntity< String> updateAuth(@RequestBody AuthUpdateRequestDto dto ,@RequestHeader("Authorization")String token){
+        return ResponseEntity.ok(authService.updateAuth(dto));
     }
 
     @GetMapping(FIND_ALL)
@@ -105,8 +104,8 @@ public class AuthController {
         }
     }
 
-        @DeleteMapping(DELETE_BY_ID)
-    public ResponseEntity<String> deleteById(@RequestParam Long id){
-      return   ResponseEntity.ok(authService.deleteAuth(id));
+    @DeleteMapping(DELETE_BY_ID)
+    public ResponseEntity<String> deleteById(@RequestParam String token){
+      return   ResponseEntity.ok(authService.deleteAuth(token));
     }
 }

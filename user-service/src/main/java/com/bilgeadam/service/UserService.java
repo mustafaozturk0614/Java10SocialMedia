@@ -98,8 +98,7 @@ public class UserService extends ServiceManager<UserProfile, String> {
             authManager.updateAuth(AuthUpdateRequestDto.builder()
                     .email(dto.getEmail()).username(dto.getUsername())
                             .id(authId.get())
-                    .build()
-
+                    .build(),"Bearer "+ dto.getToken()
             );
 
        }
@@ -176,8 +175,10 @@ public class UserService extends ServiceManager<UserProfile, String> {
     }
 
 
-    public String deleteUserProfile(Long id) {
-        Optional<UserProfile> userProfile=userRepository.findByAuthId(id);
+    public String deleteUserProfile(String token) {
+        Optional<Long> authId=jwtTokenManager.getAuthIdFromToken(token.substring(7));
+
+        Optional<UserProfile> userProfile=userRepository.findByAuthId(authId.get());
         if (userProfile.isEmpty()){
             throw new UserManagerException(ErrorType.USER_NOT_FOUND);
         }

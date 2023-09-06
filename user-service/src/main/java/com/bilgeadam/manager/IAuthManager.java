@@ -4,10 +4,7 @@ import com.bilgeadam.dto.request.AuthUpdateRequestDto;
 import com.bilgeadam.dto.request.UserSaveRequestDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import static com.bilgeadam.constant.EndPoints.*;
 
@@ -16,5 +13,6 @@ public interface IAuthManager {
 
 
     @PutMapping(UPDATE)
-    ResponseEntity< String> updateAuth(@RequestBody AuthUpdateRequestDto dto);
+    ResponseEntity<String> updateAuth(@RequestBody AuthUpdateRequestDto dto, @RequestHeader("Authorization")String token);
+
 }

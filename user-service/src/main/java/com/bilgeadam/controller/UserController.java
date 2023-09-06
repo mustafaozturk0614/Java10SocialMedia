@@ -32,7 +32,8 @@ public class UserController {
 
 
     @PostMapping(SAVE)
-    public ResponseEntity<Boolean> save(@RequestBody UserSaveRequestDto dto){
+    public ResponseEntity<Boolean> save(@RequestBody UserSaveRequestDto dto,@RequestHeader("Authorization") String token){
+        System.out.println("Authdan gelen token=>"+token);
         return  ResponseEntity.ok(userService.createNewUser(dto));
     }
     @PostMapping(ACTIVATE_STATUS)
@@ -48,7 +49,6 @@ public class UserController {
     @GetMapping(FIND_ALL)
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<UserProfileFindAllResponseDto>> findAll(){
-
         return ResponseEntity.ok(userService.findAllUserProfile());
     }
 
@@ -66,9 +66,9 @@ public class UserController {
         return ResponseEntity.ok(userService.findByStatus(status));
     }
     @DeleteMapping(DELETE_BY_ID)
-    public ResponseEntity<String> deleteById(@RequestParam Long id){
+    public ResponseEntity<String> deleteById(@RequestHeader("Authorization") String token){
 
-      return   ResponseEntity.ok(userService.deleteUserProfile(id));
+      return   ResponseEntity.ok(userService.deleteUserProfile(token));
     }
 
     @GetMapping("/find_all_by_pageable")

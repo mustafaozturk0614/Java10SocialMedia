@@ -78,12 +78,15 @@ public class AuthService extends ServiceManager<Auth, Long> {
         }
             save(auth);
             // bir metot yazacağiz 2 microservis arası haberleşme için
-            userManager.save(IAuthMapper.INSTANCE.toUserSaveRequestDto(auth));
+        String token=jwtTokenManager.createToken(auth.getId(),auth.getRole())
+                .orElseThrow(()->new AuthManagerException(ErrorType.INVALID_TOKEN));
+
+
+            userManager.save(IAuthMapper.INSTANCE.toUserSaveRequestDto(auth),"Bearer "+token);
 
 
         RegisterResponseDto responseDto = IAuthMapper.INSTANCE.toRegisterResponseDto(auth);
-        String token=jwtTokenManager.createToken(auth.getId())
-                .orElseThrow(()->new AuthManagerException(ErrorType.INVALID_TOKEN));
+
 
         responseDto.setToken(token);
 
@@ -171,9 +174,13 @@ public class AuthService extends ServiceManager<Auth, Long> {
         update(auth.get());
         return "Guncelleme başarılı";
     }
-
-    public String deleteAuth(Long id) {
-        Optional<Auth> auth=findById(id);
+    @Transactional
+    public String deleteAuth(String token) {
+        Optional<Long> id=jwtTokenManager.getIdFromToken(token);
+        if (id.isEmpty()){
+            throw new AuthManagerException(ErrorType.INVALID_TOKEN);
+        }
+        Optional<Auth> auth=findById(id.get());
         if (auth.isEmpty()){
             throw new AuthManagerException(ErrorType.USER_NOT_FOUND);
         }
@@ -182,7 +189,7 @@ public class AuthService extends ServiceManager<Auth, Long> {
         }
         auth.get().setStatus(EStatus.DELETED);
         update(auth.get());
-        userManager.deleteById(id);
+        userManager.deleteById("Bearer "+  token);
         return id + "id li kullanıcı başarıyla slindi";
     }
 }
