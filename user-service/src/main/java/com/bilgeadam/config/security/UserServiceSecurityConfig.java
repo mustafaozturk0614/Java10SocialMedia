@@ -12,15 +12,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
-public class AuthServiceSecurityConfig {
+public class UserServiceSecurityConfig {
 
     private final JwtTokenFilter jwtTokenFilter;
     private static final String[] WHITELIST={
             "/swagger-ui/**",
             "/v3/api-docs/**",
-            "/api/v1/auth/register",
-            "/api/v1/auth/login",
-            "/api/v1/auth/activate_status",
+         //   "/api/v1/user/find_all"
     };
 
     @Bean

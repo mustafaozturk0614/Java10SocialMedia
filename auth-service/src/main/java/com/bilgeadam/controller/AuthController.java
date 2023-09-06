@@ -15,6 +15,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -64,6 +65,7 @@ public class AuthController {
     }
 
     @GetMapping(FIND_ALL)
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<Auth>> findAll(){
         try {
             Thread.sleep(2000);
@@ -76,6 +78,7 @@ public class AuthController {
 
     @GetMapping("/redis")
     @Cacheable(value = "redisexample")
+    @PreAuthorize("hasAuthority('USER')")
     public String redisExample(String value){
         try {
             Thread.sleep(2000);

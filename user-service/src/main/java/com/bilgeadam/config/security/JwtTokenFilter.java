@@ -4,7 +4,6 @@ import com.bilgeadam.utility.JwtTokenManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -26,17 +25,17 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         System.out.println(request.getRequestURL());
         String authorizationHeader=request.getHeader("Authorization");
-       System.out.println(authorizationHeader);
-        System.out.println("auth==>"+SecurityContextHolder.getContext().getAuthentication());
+       System.out.println("authHeader===>"+authorizationHeader);
+       System.out.println("auth==>"+SecurityContextHolder.getContext().getAuthentication());
         if (authorizationHeader!=null&&authorizationHeader.startsWith("Bearer ")
             //   && SecurityContextHolder.getContext().getAuthentication()==null
         ){
             String token=authorizationHeader.substring(7);
-            Optional<Long> id=jwtTokenManager.getIdFromToken(token);
+            Optional<String> role=jwtTokenManager.getRoleFromToken(token);
             UserDetails userDetails=null;
-            System.out.println(token);
-            if (id.isPresent()){
-            userDetails= jwtUserDetails.loadUserByUserId(id.get());
+            System.out.println("token==>"+token);
+            if (role.isPresent()){
+            userDetails= jwtUserDetails.loadUserByUserRole(role.get());
                 UsernamePasswordAuthenticationToken authenticationToken=
                         new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);

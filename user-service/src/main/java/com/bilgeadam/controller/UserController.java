@@ -11,6 +11,7 @@ import org.apache.catalina.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -45,6 +46,7 @@ public class UserController {
     }
 
     @GetMapping(FIND_ALL)
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<UserProfileFindAllResponseDto>> findAll(){
 
         return ResponseEntity.ok(userService.findAllUserProfile());
