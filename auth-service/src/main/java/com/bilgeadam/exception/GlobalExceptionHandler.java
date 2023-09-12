@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorMessage> handleRunTimeException(RuntimeException ex){
-        return new ResponseEntity<>( createError(ErrorType.UNEXPECTED_ERROR,ex),HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>( createError(ErrorType.UNEXPECTED_ERROR,ex, ex.getMessage()),HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(AuthManagerException.class)
@@ -104,5 +104,12 @@ public class GlobalExceptionHandler {
                .code(errorType.getCode())
                .message(errorType.getMessage())
                .build();
+    }
+    private ErrorMessage createError(ErrorType errorType, Exception exception,String message) {
+        System.out.println("Hata olustu: "+exception.getMessage());
+        return ErrorMessage.builder()
+                .code(errorType.getCode())
+                .message(message)
+                .build();
     }
 }

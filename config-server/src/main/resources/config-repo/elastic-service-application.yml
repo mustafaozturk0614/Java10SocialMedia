@@ -1,0 +1,17 @@
+server:
+  port: 7079
+spring:
+  elasticsearch:
+    uris: http://localhost:9200
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: java10
+    password: 123
+  zipkin:
+    enabled: true
+    base-url: http://localhost:9411
+    service:
+      name: user-service
+rabbitmq:
+  register-elastic-queue: register-elastic-queue

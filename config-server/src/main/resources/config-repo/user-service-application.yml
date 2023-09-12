@@ -39,3 +39,5 @@ logging:
   logback:
     rollingpolicy:
       max-file-size: 10MB
+feign:
+  auth: http://localhost:7071/api/v1/auth

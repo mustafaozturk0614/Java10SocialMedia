@@ -106,6 +106,8 @@ public class AuthController {
 
     @DeleteMapping(DELETE_BY_ID)
     public ResponseEntity<String> deleteById(@RequestParam String token){
+
+
       return   ResponseEntity.ok(authService.deleteAuth(token));
     }
 }

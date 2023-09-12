@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import static com.bilgeadam.constant.EndPoints.*;
 
-@FeignClient(url = "http://localhost:7072/api/v1/user",decode404 = true,name = "auth-userprofile")
+@FeignClient(url = "${feign.user}",decode404 = true,name = "auth-userprofile")
 public interface IUserManager {
 
     @PostMapping(SAVE)
