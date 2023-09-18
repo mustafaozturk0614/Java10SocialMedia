@@ -27,7 +27,3 @@ public class Comment extends BaseEntity {
     private List<String> commentLikes; //userId
 }
 
-// yorum id 1 --> çok güzel  --> subCommentId -> 2
-
-// yorum id 2 --> teşekkür ederim --> subCOmmentId --> 3
-

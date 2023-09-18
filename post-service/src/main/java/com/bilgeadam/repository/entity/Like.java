@@ -17,8 +17,8 @@ public class Like extends BaseEntity{
     @Id
     private String id;
     private String userId;
-    private String postId; // id = 2,  id = 3
-    private String commentId; //null , comemntId = 3
+    private String postId; //beğenilen post
+    private String commentId; //beğenilen yorum
     private String username;
     private String userAvatar;
 }

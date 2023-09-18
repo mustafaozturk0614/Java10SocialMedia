@@ -16,7 +16,6 @@ public class RegisterProducer {
     @Value("${rabbitmq.register-binding-key}")
     private String bindingKey;
 
-
     public  void sendNewUser(RegisterModel model){
         rabbitTemplate.convertAndSend(exchange,bindingKey,model);
     }
