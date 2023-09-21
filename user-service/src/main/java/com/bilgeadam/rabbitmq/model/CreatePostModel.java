@@ -1,4 +1,4 @@
-package com.bilgeadam.dto.response;
+package com.bilgeadam.rabbitmq.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,8 +11,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserProfileResponseDto implements Serializable {
-    private String userId;
-    private String username;
-    private String userAvatar;
+public class CreatePostModel implements Serializable {
+    private Long authId;
 }

@@ -15,10 +15,8 @@ import java.util.Optional;
 @Service
 public class JwtTokenManager {
 
-    @Value("${jwt.secretKey}")
-    String secretKey;
-    @Value("${jwt.issuer}")
-    String issuer;
+    String secretKey = "secretKey";
+    String issuer = "issuer";
 
     public Optional<String> createToken(Long id){
         String token=null;

@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
 public class RegisterConsumer {
 
     private final UserService userService;
+
     @RabbitListener(queues = ("${rabbitmq.register-queue}"))
-    public void newUserCreate(RegisterModel model){
-        log.info("User={}",model);
+    public void newUser(RegisterModel model){
         userService.createNewUserWithRabbitmq(model);
     }
 

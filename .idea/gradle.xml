@@ -15,6 +15,7 @@
             <option value="$PROJECT_DIR$/elastic-search" />
             <option value="$PROJECT_DIR$/git-config-server" />
             <option value="$PROJECT_DIR$/mail-service" />
+            <option value="$PROJECT_DIR$/post-service" />
             <option value="$PROJECT_DIR$/user-service" />
           </set>
         </option>

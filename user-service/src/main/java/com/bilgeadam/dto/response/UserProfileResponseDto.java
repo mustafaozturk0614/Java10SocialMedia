@@ -12,6 +12,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Builder
 public class UserProfileResponseDto implements Serializable {
+
     private String userId;
     private String username;
     private String userAvatar;

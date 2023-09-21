@@ -10,47 +10,22 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMqConfig {
-
+    //auth register queue
     @Value("${rabbitmq.register-queue}")
     private String registerQueueName;
-    @Value("${rabbitmq.activation-queue}")
-    private String activationQueueName;
-
-    @Value("${rabbitmq.register-elastic-queue}")
-    private String registerElasticQueueName;
-
-    @Value("${rabbitmq.register-elastic-binding}")
-    private String registerElasticBinding;
-
-    @Value("${rabbitmq.user-exchange}")
-    private String exchange;
 
     @Bean
     Queue registerQueue(){
         return new Queue(registerQueueName);
     }
 
+    //create post consumer
+
+    private String createPostQueue = "post-queue";
 
     @Bean
-    public Queue activationQueue() {
-        return new Queue(activationQueueName);
+    Queue createPostQueue(){
+        return new Queue(createPostQueue);
     }
-
-    @Bean
-    public Queue registerElasticQueue() {
-        return new Queue(registerElasticQueueName);
-    }
-
-    @Bean
-    public DirectExchange userExchange(){
-        return new DirectExchange(exchange);
-    }
-    @Bean
-    public Binding bindingRegisterElastic(final Queue registerElasticQueue,final DirectExchange userExchange ){
-        return BindingBuilder.bind(registerElasticQueue).to(userExchange).with(registerElasticBinding);
-    }
-
-
-
 
 }

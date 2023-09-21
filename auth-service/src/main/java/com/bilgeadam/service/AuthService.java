@@ -70,19 +70,19 @@ public class AuthService extends ServiceManager<Auth, Long> {
     }
 
     @Transactional
-    public RegisterResponseDto register(RegisterRequestDto dto){
+    public RegisterResponseDto register(RegisterRequestDto dto) {
         Auth auth = IAuthMapper.INSTANCE.toAuth(dto);
         auth.setActivationCode(CodeGenerator.generateCode());
-        if (authRepository.existsByUsername(dto.getUsername())){
+        if (authRepository.existsByUsername(dto.getUsername())) {
             throw new AuthManagerException(ErrorType.USERNAME_ALREADY_EXIST);
         }
-            save(auth);
-            // bir metot yazacağiz 2 microservis arası haberleşme için
-        String token=jwtTokenManager.createToken(auth.getId(),auth.getRole())
-                .orElseThrow(()->new AuthManagerException(ErrorType.INVALID_TOKEN));
+        save(auth);
+        // bir metot yazacağiz 2 microservis arası haberleşme için
+        String token = jwtTokenManager.createToken(auth.getId(), auth.getRole())
+                .orElseThrow(() -> new AuthManagerException(ErrorType.INVALID_TOKEN));
 
 
-            userManager.save(IAuthMapper.INSTANCE.toUserSaveRequestDto(auth),"Bearer "+token);
+        userManager.save(IAuthMapper.INSTANCE.toUserSaveRequestDto(auth), "Bearer " + token);
 
 
         RegisterResponseDto responseDto = IAuthMapper.INSTANCE.toRegisterResponseDto(auth);
@@ -94,25 +94,25 @@ public class AuthService extends ServiceManager<Auth, Long> {
     }
 
     @Transactional
-    public RegisterResponseDto registerWithRabbitMq(RegisterRequestDto dto){
+    public RegisterResponseDto registerWithRabbitMq(RegisterRequestDto dto) {
         Auth auth = IAuthMapper.INSTANCE.toAuth(dto);
         auth.setActivationCode(CodeGenerator.generateCode());
-        if (authRepository.existsByUsername(dto.getUsername())){
+        if (authRepository.existsByUsername(dto.getUsername())) {
             throw new AuthManagerException(ErrorType.USERNAME_ALREADY_EXIST);
         }
         save(auth);
         //rabbit mq ile haberleştireceğiz
-            registerProducer.sendNewUser(IAuthMapper.INSTANCE.toRegisterModel(auth));
+        registerProducer.sendNewUser(IAuthMapper.INSTANCE.toRegisterModel(auth));
 
 
         //register token olusturma
         RegisterResponseDto responseDto = IAuthMapper.INSTANCE.toRegisterResponseDto(auth);
-        String token=jwtTokenManager.createToken(auth.getId())
-                .orElseThrow(()->new AuthManagerException(ErrorType.INVALID_TOKEN));
+        String token = jwtTokenManager.createToken(auth.getId())
+                .orElseThrow(() -> new AuthManagerException(ErrorType.INVALID_TOKEN));
 
         responseDto.setToken(token);
         // mail atma işlemi için mail servis ile haberleşilecek
-        MailModel mailModel=IAuthMapper.INSTANCE.toMailModel(auth);
+        MailModel mailModel = IAuthMapper.INSTANCE.toMailModel(auth);
         mailModel.setToken(token);
 //        mailProducer.sendMail(MailModel
 //                .builder().username(auth.getUsername()).email(auth.getEmail())
@@ -124,49 +124,47 @@ public class AuthService extends ServiceManager<Auth, Long> {
     }
 
 
-
-
-    public String login(LoginRequestDto dto){
+    public String login(LoginRequestDto dto) {
         Optional<Auth> optionalAuth = authRepository.findOptionalByUsernameAndPassword(dto.getUsername(), dto.getPassword());
-        if(optionalAuth.isEmpty()){
+        if (optionalAuth.isEmpty()) {
             throw new AuthManagerException(ErrorType.LOGIN_ERROR);
         }
-        if(!optionalAuth.get().getStatus().equals(EStatus.ACTIVE)){
+        if (!optionalAuth.get().getStatus().equals(EStatus.ACTIVE)) {
             throw new AuthManagerException(ErrorType.ACCOUNT_NOT_ACTIVE);
         }
 
-        return jwtTokenManager.createToken(optionalAuth.get().getId(),optionalAuth.get().getRole())
-                .orElseThrow(()-> new AuthManagerException(ErrorType.TOKEN_NOT_CREATED));
+        return jwtTokenManager.createToken(optionalAuth.get().getId(), optionalAuth.get().getRole())
+                .orElseThrow(() -> new AuthManagerException(ErrorType.TOKEN_NOT_CREATED));
     }
 
     @Transactional
-    public String activateStatus(ActivateRequestDto dto){
-        Optional<Long> id=jwtTokenManager.getIdFromToken(dto.getToken());
-        if (id.isEmpty()){
-            throw  new AuthManagerException(ErrorType.INVALID_TOKEN);
+    public String activateStatus(ActivateRequestDto dto) {
+        Optional<Long> id = jwtTokenManager.getIdFromToken(dto.getToken());
+        if (id.isEmpty()) {
+            throw new AuthManagerException(ErrorType.INVALID_TOKEN);
         }
         Optional<Auth> optionalAuth = findById(id.get());
-        if(optionalAuth.isEmpty()){
+        if (optionalAuth.isEmpty()) {
             throw new AuthManagerException(ErrorType.USER_NOT_FOUND);
         }
-        if(optionalAuth.get().getStatus().equals(EStatus.ACTIVE)){
+        if (optionalAuth.get().getStatus().equals(EStatus.ACTIVE)) {
             throw new AuthManagerException(ErrorType.ALREADY_ACTIVE);
         }
-        if(dto.getActivationCode().equals(optionalAuth.get().getActivationCode())){
+        if (dto.getActivationCode().equals(optionalAuth.get().getActivationCode())) {
             optionalAuth.get().setStatus(EStatus.ACTIVE);
             update(optionalAuth.get());
-           // userManager.activateStatus(dto.getToken()); // open feign ile haberleşme
+            // userManager.activateStatus(dto.getToken()); // open feign ile haberleşme
             activationProducer.activateStatus(dto.getToken()); // rabbitmq ile haberleşme
             return "Hesabınız aktive edilmiştir";
-        }else {
+        } else {
             throw new AuthManagerException(ErrorType.INVALID_CODE);
         }
     }
 
 
-    public String updateAuth(AuthUpdateRequestDto dto){
-        Optional<Auth> auth=findById(dto.getId());
-        if (auth.isEmpty()){
+    public String updateAuth(AuthUpdateRequestDto dto) {
+        Optional<Auth> auth = findById(dto.getId());
+        if (auth.isEmpty()) {
             throw new AuthManagerException(ErrorType.USER_NOT_FOUND);
         }
         auth.get().setEmail(dto.getEmail());
@@ -174,22 +172,23 @@ public class AuthService extends ServiceManager<Auth, Long> {
         update(auth.get());
         return "Guncelleme başarılı";
     }
+
     @Transactional
     public String deleteAuth(String token) {
-        Optional<Long> id=jwtTokenManager.getIdFromToken(token);
-        if (id.isEmpty()){
+        Optional<Long> id = jwtTokenManager.getIdFromToken(token);
+        if (id.isEmpty()) {
             throw new AuthManagerException(ErrorType.INVALID_TOKEN);
         }
-        Optional<Auth> auth=findById(id.get());
-        if (auth.isEmpty()){
+        Optional<Auth> auth = findById(id.get());
+        if (auth.isEmpty()) {
             throw new AuthManagerException(ErrorType.USER_NOT_FOUND);
         }
-        if (auth.get().getStatus().equals(EStatus.DELETED)){
-            throw new AuthManagerException(ErrorType.USER_NOT_FOUND,"Hesap zaten silinmiş");
+        if (auth.get().getStatus().equals(EStatus.DELETED)) {
+            throw new AuthManagerException(ErrorType.USER_NOT_FOUND, "Hesap zaten silinmiş");
         }
         auth.get().setStatus(EStatus.DELETED);
         update(auth.get());
-        userManager.deleteById("Bearer "+  token);
+        userManager.deleteById("Bearer " + token);
         return id + "id li kullanıcı başarıyla slindi";
     }
 }

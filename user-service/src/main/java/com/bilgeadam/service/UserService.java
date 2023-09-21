@@ -17,9 +17,13 @@ import com.bilgeadam.repository.entity.UserProfile;
 import com.bilgeadam.repository.enums.EStatus;
 import com.bilgeadam.utility.JwtTokenManager;
 import com.bilgeadam.utility.ServiceManager;
+import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,6 +84,8 @@ public class UserService extends ServiceManager<UserProfile, String> {
     }
     @Transactional
     public String updateUserProfile(UserProfileUpdateRequestDto dto){
+        Authentication authorization = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("Authorization: " + authorization.getPrincipal());
        Optional<Long> authId=jwtTokenManager.getAuthIdFromToken(dto.getToken()) ;
        if (authId.isEmpty()){
            throw new UserManagerException(ErrorType.INVALID_TOKEN);
@@ -205,5 +211,13 @@ public class UserService extends ServiceManager<UserProfile, String> {
         Sort sort=Sort.by(Sort.Direction.fromString(direction),sortParameter);
         Pageable pageable= PageRequest.of(pageNumber,pageSize,sort);
         return userRepository.findAll(pageable);
+    }
+
+    public Optional<UserProfile> findByUserWithAuthId(Long authId){
+        Optional<UserProfile> userProfile = userRepository.findByAuthId(authId);
+        if (userProfile.isEmpty()){
+            throw new UserManagerException(ErrorType.USER_NOT_FOUND);
+        }
+        return userProfile;
     }
 }
