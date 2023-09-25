@@ -15,4 +15,5 @@ public class UserProfileResponseDto implements Serializable {
     private String userId;
     private String username;
     private String userAvatar;
+
 }

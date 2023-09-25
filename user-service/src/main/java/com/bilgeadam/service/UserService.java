@@ -6,6 +6,7 @@ import com.bilgeadam.dto.request.AuthUpdateRequestDto;
 import com.bilgeadam.dto.request.UserProfileUpdateRequestDto;
 import com.bilgeadam.dto.request.UserSaveRequestDto;
 import com.bilgeadam.dto.response.UserProfileFindAllResponseDto;
+import com.bilgeadam.dto.response.UserProfileResponseDto;
 import com.bilgeadam.exception.ErrorType;
 import com.bilgeadam.exception.UserManagerException;
 import com.bilgeadam.manager.IAuthManager;
@@ -219,5 +220,20 @@ public class UserService extends ServiceManager<UserProfile, String> {
             throw new UserManagerException(ErrorType.USER_NOT_FOUND);
         }
         return userProfile;
+    }
+
+    //for post service, postUpdate()
+    public UserProfileResponseDto findByUserSimpleDataWithAuthId(Long authId){
+        Optional<UserProfile> userProfile = userRepository.findByAuthId(authId);
+        if (userProfile.isEmpty()){
+            throw new UserManagerException(ErrorType.USER_NOT_FOUND);
+        }
+
+        UserProfileResponseDto userProfileResponseDto = UserProfileResponseDto.builder()
+                .userId(userProfile.get().getId())
+                .username(userProfile.get().getUsername())
+                .userAvatar(userProfile.get().getAvatar())
+                .build();
+        return userProfileResponseDto;
     }
 }

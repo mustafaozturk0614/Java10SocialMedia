@@ -2,6 +2,7 @@ package com.bilgeadam.controller;
 import com.bilgeadam.dto.request.UserProfileUpdateRequestDto;
 import com.bilgeadam.dto.request.UserSaveRequestDto;
 import com.bilgeadam.dto.response.UserProfileFindAllResponseDto;
+import com.bilgeadam.dto.response.UserProfileResponseDto;
 import com.bilgeadam.repository.entity.UserProfile;
 import com.bilgeadam.repository.enums.EStatus;
 import com.bilgeadam.service.UserService;
@@ -81,5 +82,10 @@ public class UserController {
     public ResponseEntity<Slice<UserProfile>> findAllBySlice(int pageSize, int pageNumber, @RequestParam(required = false,defaultValue = "ASC") String direction, @RequestParam(required = false,defaultValue = "id") String sortParameter){
 
         return ResponseEntity.ok(userService.findAllBySLice(pageSize,pageNumber,direction,sortParameter));
+    }
+
+    @GetMapping("/find-user-simple-data/{authId}")
+    public ResponseEntity<UserProfileResponseDto> findByUserSimpleDataWithAuthId(@PathVariable Long authId){
+        return ResponseEntity.ok(userService.findByUserSimpleDataWithAuthId(authId));
     }
 }

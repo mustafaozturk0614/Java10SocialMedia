@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.*;
 
 import static com.bilgeadam.constant.EndPoints.*;
 
-@FeignClient(url = "http://localhost:7072/api/v1/user",decode404 = true,name = "auth-userprofile")
+//discovery server
+//feign arka tarafta RestTemplate mantığında bir yapı kullanır.
+@FeignClient(url = "http://localhost:7072/api/v1/user",decode404 = true,name = "auth-userprofile")  //interface proxy
 public interface IUserManager {
 
     @PostMapping(SAVE)
